@@ -13,3 +13,8 @@
 	url = https://github.com/gallickgunner/ImGui-Addons.git
 	branch = master
 
+[submodule "implot"]
+	path = implot
+	url = https://github.com/epezent/implot.git
+	branch = master
+

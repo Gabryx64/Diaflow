@@ -11,7 +11,11 @@
 #include<imgui.h>
 #include<imgui_impl_sdl.h>
 #include<imgui_impl_opengl3.h>
+#include<implot.h>
 #include<ImGuiFileBrowser.h>
+
+// Diaflow
+#include<flow.h>
 
 int main(int argc, char* argv[])
 {
@@ -57,12 +61,41 @@ int main(int argc, char* argv[])
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImPlot::CreateContext();
 
 	ImGui::StyleColorsDark();
+	// ImGui::StyleColorsLight();
 
 	ImGui_ImplSDL2_InitForOpenGL(window, context);
 	ImGui_ImplOpenGL3_Init();
+
+	ImGuiIO& io = ImGui::GetIO();
+
+	std::cout << "a" << std::endl;
+	Diaflow::Program program;
+	program["main"] = Diaflow::Comp
+	{
+		new Diaflow::If("a == b",
+			Diaflow::Comp
+			{
+				new Diaflow::Switch("a", Diaflow::Cases
+				{
+					Diaflow::Case("\"x\"", Diaflow::Comp{}),
+					Diaflow::Case("\"y\"", Diaflow::Comp{}),
+				}),
+			},
+			Diaflow::Comp
+			{
+				new Diaflow::Switch("b", Diaflow::Cases
+				{
+					Diaflow::Case("\"x\"", Diaflow::Comp{}),
+					Diaflow::Case("\"y\"", Diaflow::Comp{}),
+				}),
+		}),
+	};
+
+	std::cout << "b" << std::endl;
+	std::cout << program.to_string() << std::endl;
 
 	bool running = true;
 	while(running)
@@ -88,9 +121,68 @@ int main(int argc, char* argv[])
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::SetNextWindowSize(io.DisplaySize);
 
-		ImGui::Begin("Diaflow");
-		ImGui::End();
+		if(ImGui::Begin("DiaflowEditor", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_MenuBar))
+		{
+			if(ImGui::BeginMenuBar())
+			{	
+				if(ImGui::BeginMenu("File"))
+				{
+					if(ImGui::MenuItem("New", "Ctrl+N"))
+					{
+						std::cout << "New" << std::endl;
+					}
+					
+					if(ImGui::MenuItem("Open", "Ctrl+O"))
+					{
+						std::cout << "Open" << std::endl;
+					}
+					
+					if(ImGui::MenuItem("Save", "Ctrl+S"))
+					{
+						std::cout << "Save" << std::endl;
+					}
+					
+					if(ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
+					{
+						std::cout << "Save As" << std::endl;
+					}
+
+					if(ImGui::MenuItem("Exit", "Ctrl+Q"))
+					{
+						running = false;
+					}
+
+					ImGui::EndMenu();
+				}
+
+				if(ImGui::BeginMenu("Edit"))
+				{
+					if(ImGui::MenuItem("Undo", "Ctrl+Z"))
+					{
+						std::cout << "Undo" << std::endl;
+					}
+					
+					if(ImGui::MenuItem("Redo", "Ctrl+Y"))
+					{
+						std::cout << "Redo" << std::endl;
+					}
+					
+					if(ImGui::MenuItem("Options", "Ctrl+,"))
+					{
+						std::cout << "Options" << std::endl;
+					}
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::EndMenuBar();
+			}
+
+			ImGui::End();
+		}
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -100,6 +192,8 @@ int main(int argc, char* argv[])
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
+
+	ImPlot::DestroyContext();
 	ImGui::DestroyContext();
 
 	SDL_DestroyWindow(window);
