@@ -1,0 +1,4 @@
+Theme:       Material
+Language:    Plain Text
+Background: #8BBCF5
+Width:       600
