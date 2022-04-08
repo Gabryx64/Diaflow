@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 	SDL_Window* window = SDL_CreateWindow("Diaflow", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-	if(window == nullptr)
+	if(!window)
 	{
 		std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
 		SDL_Quit();
@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 	}
 
 	SDL_GLContext context = SDL_GL_CreateContext(window);
-	if(context == nullptr)
+	if(!context)
 	{
 		std::cout << "SDL_GL_CreateContext Error: " << SDL_GetError() << std::endl;
 		SDL_DestroyWindow(window);

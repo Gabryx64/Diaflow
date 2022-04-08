@@ -39,7 +39,7 @@ namespace Diaflow
 		Program()
 		{}
 
-		Comp& operator[](std::string func)
+		Comp& operator[](const std::string& func)
 		{
 			if(funcs.find(func) == funcs.end())
 				funcs[func] = Comp();
@@ -53,11 +53,11 @@ namespace Diaflow
 			tinyxml2::XMLElement* root = doc.NewElement("prog");
 			doc.InsertEndChild(root);
 			
-			for(auto& f : funcs)
+			for(auto& [funcName, funcBody] : funcs)
 			{
 				tinyxml2::XMLElement* func = root->InsertNewChildElement("func");
-				func->SetAttribute("name", f.first.c_str());
-				f.second.xml(func);
+				func->SetAttribute("name", funcName.c_str());
+				funcBody.xml(func);
 			}
 
 			tinyxml2::XMLPrinter printer;
@@ -72,7 +72,7 @@ namespace Diaflow
 		std::string cond;
 		Comp t, f;
 
-		If(std::string cond, Comp t, Comp f)
+		If(const std::string& cond, const Comp& t, const Comp& f)
 			: cond(cond), t(t), f(f)
 		{}
 
@@ -99,7 +99,7 @@ namespace Diaflow
 		std::string cond;
 		Comp body;
 
-		While(std::string cond, Comp body)
+		While(const std::string& cond, const Comp& body)
 			: cond(cond), body(body)
 		{}
 
@@ -123,7 +123,7 @@ namespace Diaflow
 		std::string init, cond, inc;
 		Comp body;
 
-		For(std::string init, std::string cond, std::string inc, Comp body)
+		For(const std::string& init, const std::string& cond, const std::string& inc, const Comp& body)
 			: init(init), cond(cond), inc(inc), body(body)
 		{}
 
@@ -149,7 +149,7 @@ namespace Diaflow
 		std::string var, iter;
 		Comp body;
 
-		Foreach(std::string var, std::string iter, Comp body)
+		Foreach(const std::string& var, const std::string& iter, const Comp& body)
 			: var(var), iter(iter), body(body)
 		{}
 
@@ -169,15 +169,15 @@ namespace Diaflow
 	};
 
 	typedef std::pair<std::string, Comp> Case;
-	typedef std::vector<Case> Cases;
+    typedef std::vector<Case> Cases;
 
 	class Switch : public Block
 	{
 	public:
 		std::string expr;
-		Cases cases;
+        Cases cases;
 
-		Switch(std::string expr, Cases cases)
+		Switch(const std::string& expr, const Cases& cases)
 			: expr(expr), cases(cases)
 		{}
 
@@ -185,19 +185,19 @@ namespace Diaflow
 		{
 			tinyxml2::XMLElement* element = parent->InsertNewChildElement("switch");
 			element->SetAttribute("expr", expr.c_str());
-			for(std::pair<std::string, Comp> c : cases)
+			for(auto& [caseExpr, caseBody] : cases)
 			{
 				tinyxml2::XMLElement* case_element = element->InsertNewChildElement("case");
-				case_element->SetAttribute("expr", c.first.c_str());
-				c.second.xml(case_element);
+				case_element->SetAttribute("expr", caseExpr.c_str());
+				caseBody.xml(case_element);
 			}
 		}
 
 		~Switch()
 		{
-			for(std::pair<std::string, Comp> c : cases)
+			for(auto [caseExpr, caseBody] : cases)
 			{
-				for(Block* block : c.second)
+				for(Block* block : caseBody)
 					delete block;
 			}
 		}
