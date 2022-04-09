@@ -71,31 +71,32 @@ int main(int argc, char* argv[])
 
 	ImGuiIO& io = ImGui::GetIO();
 
-	std::cout << "a" << std::endl;
 	Diaflow::Program program;
-	program["main"] = Diaflow::Comp
-	{
-		new Diaflow::If("a == b",
-			Diaflow::Comp
-			{
-				new Diaflow::Switch("a", Diaflow::Cases
+	program["main"] = std::make_pair(
+		Diaflow::Args(),
+		Diaflow::Comp
+		{
+			new Diaflow::If("a == b",
+				Diaflow::Comp
 				{
-					Diaflow::Case("\"x\"", Diaflow::Comp{}),
-					Diaflow::Case("\"y\"", Diaflow::Comp{}),
-				}),
-			},
-			Diaflow::Comp
-			{
-				new Diaflow::Switch("b", Diaflow::Cases
+					new Diaflow::Switch("a", Diaflow::Cases
+					{
+						Diaflow::Case("\"x\"", Diaflow::Comp{}),
+						Diaflow::Case("\"y\"", Diaflow::Comp{}),
+					}),
+				},
+				Diaflow::Comp
 				{
-					Diaflow::Case("\"x\"", Diaflow::Comp{}),
-					Diaflow::Case("\"y\"", Diaflow::Comp{}),
-				}),
-		}),
-	};
+					new Diaflow::Switch("b", Diaflow::Cases
+					{
+						Diaflow::Case("\"x\"", Diaflow::Comp{}),
+						Diaflow::Case("\"y\"", Diaflow::Comp{}),
+					}),
+			}),
+		}
+	);
 
-	std::cout << "b" << std::endl;
-	std::cout << program.to_string() << std::endl;
+	std::cout << program.xml_string() << std::endl;
 
 	bool running = true;
 	while(running)
